@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Find the buried treasure!</title>
+  </head>
+  <body>
+    <h1 id="heading">Find the buried treasure</h1>
+
+    <div style="position: relative">
+      <img id="map" width="400" height="400" src="./map.jpg" />
+      <div
+        id="treasure"
+        style="
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          background-color: red;
+          display: none;
+        "
+      ></div>
+    </div>
+
+    <p id="distance"></p>
+    <p id="remaining">Залишилося спроб: 10</p>
+
+    <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+
+    <script>
+      var getRandomNumber = function (size) {
+        return Math.floor(Math.random() * size);
+      };
+
+      var getDistance = function (event, target) {
+        var mapOffset = $("#map").offset();
+        var offsetX = event.pageX - mapOffset.left;
+        var offsetY = event.pageY - mapOffset.top;
+        var diffX = offsetX - target.x;
+        var diffY = offsetY - target.y;
+        return Math.sqrt(diffX * diffX + diffY * diffY);
+      };
+
+      var getDistanceHint = function (distance) {
+        if (distance < 10) {
+          return "Дуже гаряче!";
+        } else if (distance < 20) {
+          return "Гаряче";
+        } else if (distance < 40) {
+          return "Тепло";
+        } else if (distance < 80) {
+          return "Тепліше";
+        } else if (distance < 160) {
+          return "Холодно";
+        } else if (distance < 320) {
+          return "Дуже Холодно";
+        } else {
+          return "Зовім не тути";
+        }
+      };
+
+      var width = 400;
+      var height = 400;
+      var clicks = 0;
+      var maxClicks = 10;
+      var target = {
+        x: getRandomNumber(width),
+        y: getRandomNumber(height),
+      };
+
+      $("#map").click(function (event) {
+        if (clicks >= maxClicks) {
+          alert("Лузер! Більше не можна клікати.");
+          $("#distance").text(
+            "Скарб був тут: X: " + target.x + ", Y: " + target.y
+          );
+          $("#treasure").css("left", target.x + "px");
+          $("#treasure").css("top", target.y + "px");
+          $("#treasure").show();
+        } else {
+          clicks++;
+          var distance = getDistance(event, target);
+          var distanceHint = getDistanceHint(distance);
+          $("#distance").text(distanceHint);
+
+          if (distance < 8) {
+            alert("Знайшов скарб за " + clicks + " кліків");
+            $("#treasure").css("left", target.x + "px");
+            $("#treasure").css("top", target.y + "px");
+            $("#treasure").show();
+          }
+
+          var remainingClicks = maxClicks - clicks;
+          $("#remaining").text("Залишилося спроб: " + remainingClicks);
+
+          if (remainingClicks <= 0) {
+            alert("Лузер! Залишилося " + remainingClicks + " спроб.");
+            $("#distance").text(
+              "Скарб був тут: X: " + target.x + ", Y: " + target.y
+            );
+            $("#treasure").css("left", target.x + "px");
+            $("#treasure").css("top", target.y + "px");
+            $("#treasure").show();
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
